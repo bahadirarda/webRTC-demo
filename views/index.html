@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rooms</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Rooms</h1>
+        <div id="room-list" class="room-list">
+            <!-- Dinamik oda listesi burada oluşturulacak -->
+        </div>
+    </div>
+
+    <script>
+        fetch('/api/rooms')
+            .then(response => response.json())
+            .then(data => {
+                // Odaları kullanarak sayfanızı güncelleyin
+                const roomList = document.getElementById('room-list');
+                roomList.innerHTML = ''; // Var olan statik içeriği temizle
+                data.forEach(room => {
+                    const listItem = document.createElement('li');
+                    const link = document.createElement('a');
+                    link.href = `/room/${room._id}`; // Sunucudan gelen oda ID'si kullanılır
+                    link.textContent = room.roomName; // Oda adı
+                    listItem.appendChild(link);
+                    roomList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error(error));
+    </script>
+</body>
+</html>

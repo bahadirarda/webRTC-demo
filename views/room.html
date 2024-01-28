@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Audio Example</title>
+    <style>
+        /* Kullanıcı kartları için stil */
+        .user-card {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            margin: 5px;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        /* Kullanıcı avatarı için stil */
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-right: 10px;
+        }
+
+        /* Ses durumu için stil */
+        .audio-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-left: auto;
+        }
+
+        /* Kullanıcı adı için stil */
+        .username {
+            font-weight: bold;
+        }
+
+        /* Ses durumu için yeşil çerçeve */
+        .audio-icon.active {
+            border: 2px solid green;
+        }
+    </style>
+</head>
+<body>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simple-peer@10.6.1/simplepeer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <!-- Diğer kütüphaneleri eklemek için buraya ekleyebilirsiniz -->
+
+    <div id="user-list">
+        <!-- Kullanıcılar burada dinamik olarak listelenecek -->
+    </div>
+
+    <audio id="my-audio" autoplay></audio> <!-- Kendi ses akışınızı göstermek için -->
+
+    <!-- Diğer içerikler buraya eklenebilir -->
+
+    <script>
+        // Kullanıcıları tutacak bir dizi oluşturalım
+        const users = [];
+
+        // Kendi kullanıcı adınızı ayarlayın
+        const myUsername = "Sizin Kullanıcı Adınız";
+
+        // Kullanıcı adını eklemek için bir fonksiyon
+        function addUser(username) {
+            users.push(username);
+            // Kullanıcı listesini güncelleyelim
+            updateUserList();
+        }
+
+        // Kullanıcı listesini güncellemek için bir fonksiyon
+        function updateUserList() {
+            const userListElement = document.getElementById('user-list');
+            // Önce mevcut içeriği temizleyelim
+            userListElement.innerHTML = '';
+
+            // Kullanıcıları dönerek listeye ekleyelim
+            users.forEach(username => {
+                const userCard = document.createElement('div');
+                userCard.classList.add('user-card');
+
+                // Avatar için rastgele renk oluşturun (örneğin sadece arka plan rengi)
+                const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                userCard.innerHTML = `
+                    <div class="user-avatar" style="background-color: ${randomColor}"></div>
+                    <span class="username">${username}</span>
+                    <div class="audio-icon"></div>
+                `;
+
+                userListElement.appendChild(userCard);
+            });
+        }
+
+        // WebRTC ile kendi ses akışınızı görüntülemek için
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                const myAudio = document.getElementById('my-audio');
+                myAudio.srcObject = stream;
+                myAudio.onloadedmetadata = () => {
+                    // Ses akışı geldiğinde ses ikonunu etkinleştir
+                    const audioIcon = document.querySelector('.audio-icon');
+                    audioIcon.classList.add('active');
+                };
+            })
+            .catch(error => {
+                console.error('Mikrofon erişimi reddedildi: ' + error);
+            });
+
+        // Kendi kullanıcı adınızı kullanıcı listesine ekleyin
+        addUser(myUsername);
+    </script>
+</body>
+</html>
